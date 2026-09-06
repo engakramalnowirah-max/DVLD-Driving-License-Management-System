@@ -40,9 +40,10 @@ namespace DVLD_DataAccessLayer
                     DriverID = ID;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                clsEventViewer.SendEventLogApplication("Erorr in insert new Driver " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
+
             }
             finally
             {
@@ -82,9 +83,9 @@ namespace DVLD_DataAccessLayer
 
                 Reader.Close();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                clsEventViewer.SendEventLogApplication("Erorr in Git Driver By ID " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
             }
             finally
             {
@@ -119,9 +120,10 @@ namespace DVLD_DataAccessLayer
                 Connection.Open();
                 RowsAffected = Command.ExecuteNonQuery();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                clsEventViewer.SendEventLogApplication("Erorr in Update " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
+
             }
             finally
             {
@@ -149,9 +151,9 @@ namespace DVLD_DataAccessLayer
                 Connection.Open();
                 RowsAffected = Command.ExecuteNonQuery();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                clsEventViewer.SendEventLogApplication("Erorr in Delete Driver " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
             }
             finally
             {
@@ -183,9 +185,9 @@ namespace DVLD_DataAccessLayer
 
                 Reader.Close();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                clsEventViewer.SendEventLogApplication("Erorr in Git All Drivers " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
             }
             finally
             {
@@ -215,9 +217,9 @@ namespace DVLD_DataAccessLayer
 
                 RowAffected = Command.ExecuteNonQuery();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                clsEventViewer.SendEventLogApplication("Erorr in is Driver Exist " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
             }
             finally
             {
@@ -257,9 +259,9 @@ namespace DVLD_DataAccessLayer
 
                 Reader.Close();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                clsEventViewer.SendEventLogApplication("Erorr in Git Driver By Person ID " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
             }
             finally
             {
