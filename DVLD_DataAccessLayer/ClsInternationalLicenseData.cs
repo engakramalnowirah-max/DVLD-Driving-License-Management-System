@@ -63,9 +63,9 @@ namespace DVLD_DataAccessLayer
                     InternationalLicenseID = ID;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                clsEventViewer.SendEventLogApplication("Erorr in insert new International License " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
             }
             finally
             {
@@ -119,9 +119,9 @@ namespace DVLD_DataAccessLayer
 
                 Reader.Close();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                clsEventViewer.SendEventLogApplication("Erorr in Git International Licnese By ID " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
             }
             finally
             {
@@ -229,9 +229,9 @@ namespace DVLD_DataAccessLayer
                 Connection.Open();
                 RowsAffected = Command.ExecuteNonQuery();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                clsEventViewer.SendEventLogApplication("Erorr in Update International License " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
             }
             finally
             {
@@ -296,9 +296,9 @@ namespace DVLD_DataAccessLayer
 
                 Reader.Close();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                clsEventViewer.SendEventLogApplication("Erorr in Git International Licneses " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
             }
             finally
             {
@@ -377,9 +377,9 @@ namespace DVLD_DataAccessLayer
                 if (Result != null && int.TryParse(Result.ToString(), out int Val))
                     ID = Val;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                clsEventViewer.SendEventLogApplication("Erorr in Git international License ID By Driver ID " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
             }
             finally
             {
@@ -424,7 +424,7 @@ namespace DVLD_DataAccessLayer
 
             catch (Exception ex)
             {
-                throw;
+                clsEventViewer.SendEventLogApplication("Erorr in Git Driver International Licenses " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
             }
             finally
             {
