@@ -33,8 +33,9 @@ namespace DVLD_DataAccessLayer
                 Reader.Close();
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                clsEventViewer.SendEventLogApplication("Erorr in Git All Applicaion " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
 
             }
             finally
@@ -84,10 +85,10 @@ namespace DVLD_DataAccessLayer
                     ApplicationID = Result;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                clsEventViewer.SendEventLogApplication("Erorr in insert new Base Applicaion "+ex.Message,System.Diagnostics.EventLogEntryType.Error);
             }
             finally
             {
@@ -124,10 +125,10 @@ namespace DVLD_DataAccessLayer
                 Connection.Open();
                 isAffected = Command.ExecuteNonQuery();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                clsEventViewer.SendEventLogApplication("Erorr in Update Base Applicaion " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
 
-                
             }
             finally
             {
@@ -152,10 +153,11 @@ namespace DVLD_DataAccessLayer
 
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                
+                clsEventViewer.SendEventLogApplication("Erorr in Delete Base Applicaion " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
+
             }
             finally
             {
@@ -190,10 +192,11 @@ namespace DVLD_DataAccessLayer
 
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                isAffected = false;
+                clsEventViewer.SendEventLogApplication("Erorr in Git Base Applicaion By ID" + ex.Message, System.Diagnostics.EventLogEntryType.Error);
+
             }
             finally
             {
@@ -202,66 +205,7 @@ namespace DVLD_DataAccessLayer
             return isAffected;
         }
 
-        //  public static bool IsApplicationExist(int ApplicationID)
-        //  {
-        //      int isAffected = 0;
-        //      SqlConnection Connection = new SqlConnection(ClsConnectionSettings.ConnectionString);
-        //      string Query = @"select Found = 1 from Applications where ApplicationID = @ApplicationID";
-        //      SqlCommand Command = new SqlCommand (Query, Connection);
-        //      Command.Parameters.AddWithValue("@ApplicationID", ApplicationID);
 
-        //      try
-        //      {
-        //          Connection.Open();
-        //          isAffected = Command.ExecuteNonQuery();
-        //      }
-        //      catch (Exception)
-        //      {
-
-
-        //      }
-        //      finally
-        //      {
-        //          Connection.Close();
-        //      }
-
-        //      return (isAffected != 0);
-        //  }
-
-        //  public static bool DoesPersonHaveActiveApplication(int PersonID,int ApplicationTypeID)
-        //  {
-        //      return (GetActiveApplicationID(PersonID, ApplicationTypeID) != 0);
-        //  }
-
-        public static int GetActiveApplicationID(int PersonID, int ApplicationTypeID)
-        {
-            int ApplicationID = -1;
-            SqlConnection Connection = new SqlConnection(ClsConnectionSettings.ConnectionString);
-            string Query = @"select ApplicationID from Applications where ApplicantPersonID = @PersonID  and ApplicationTypeID = @ApplicationTypeID and ApplicationStatus = 1;";
-            SqlCommand Command = new SqlCommand(Query, Connection);
-            Command.Parameters.AddWithValue("@PersonID", PersonID);
-            Command.Parameters.AddWithValue("@ApplicationTypeID", ApplicationTypeID);
-
-            try
-            {
-                Connection.Open();
-                object obj = Command.ExecuteScalar();
-                if (obj != null && int.TryParse(obj.ToString(), out int Result))
-                {
-                    ApplicationID = Result;
-                }
-            }
-            catch (Exception)
-            {
-
-
-            }
-            finally
-            {
-                Connection.Close();
-            }
-            return ApplicationID;
-        }
 
         public static int GetActiveApplicationIDforLicenseClass(int PersonID, int ApplicationTypeID, int licenseClassID)
         {
@@ -286,10 +230,11 @@ namespace DVLD_DataAccessLayer
                     ApplicationID = Result;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                clsEventViewer.SendEventLogApplication("Erorr in Git Acitve Base Applicaion " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
+
             }
             finally
             {
@@ -320,10 +265,11 @@ namespace DVLD_DataAccessLayer
                 isAffected = Command.ExecuteNonQuery();
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                
+                clsEventViewer.SendEventLogApplication("Erorr in Base Applicaion Update Status " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
+
             }
             finally
             {

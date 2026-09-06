@@ -159,11 +159,5 @@ namespace DVLD_BusinessLayer
         }
 
 
-        public static int IsActiveApplicationID(int PersonID, int ApplicationTypeID, int licenseClassID)
-        {
-            return ClsApplicationData.GetActiveApplicationID(PersonID,ApplicationTypeID);
-        }
-
-
     }
 }
