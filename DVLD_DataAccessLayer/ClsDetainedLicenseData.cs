@@ -32,9 +32,10 @@ namespace DVLD_DataAccessLayer
 
                 Reader.Close();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                clsEventViewer.SendEventLogApplication("Erorr in Get All Detained Licenses " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
+
             }
             finally
             {
@@ -93,9 +94,10 @@ namespace DVLD_DataAccessLayer
                 if (Result != null && int.TryParse(Result.ToString(), out int ID))
                     DetainID = ID;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                clsEventViewer.SendEventLogApplication("Erorr in Insert Detained License " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
+
             }
             finally
             {
@@ -155,9 +157,10 @@ namespace DVLD_DataAccessLayer
                 Connection.Open();
                 RowsAffected = Command.ExecuteNonQuery();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                clsEventViewer.SendEventLogApplication("Erorr in Update Detained License " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
+
             }
             finally
             {
@@ -222,10 +225,7 @@ namespace DVLD_DataAccessLayer
 
                 Reader.Close();
             }
-            catch (Exception)
-            {
-                throw;
-            }
+            catch (Exception ex) { clsEventViewer.SendEventLogApplication("Erorr in insert new Base Applicaion " + ex.Message, System.Diagnostics.EventLogEntryType.Error); }
             finally
             {
                 Connection.Close();
@@ -288,10 +288,7 @@ namespace DVLD_DataAccessLayer
 
                 Reader.Close();
             }
-            catch (Exception)
-            {
-                throw;
-            }
+            catch (Exception ex) { clsEventViewer.SendEventLogApplication("Erorr in insert new Base Applicaion " + ex.Message, System.Diagnostics.EventLogEntryType.Error); }
             finally
             {
                 Connection.Close();
@@ -319,10 +316,7 @@ namespace DVLD_DataAccessLayer
                 Connection.Open();
                 RowsAffected = Command.ExecuteNonQuery();
             }
-            catch (Exception)
-            {
-                throw;
-            }
+            catch (Exception ex) { clsEventViewer.SendEventLogApplication("Erorr in insert new Base Applicaion " + ex.Message, System.Diagnostics.EventLogEntryType.Error); }
             finally
             {
                 Connection.Close();
@@ -354,10 +348,7 @@ namespace DVLD_DataAccessLayer
 
                 IsFound = (Result != null);
             }
-            catch (Exception)
-            {
-                throw;
-            }
+            catch (Exception ex) { clsEventViewer.SendEventLogApplication("Erorr in insert new Base Applicaion " + ex.Message, System.Diagnostics.EventLogEntryType.Error); }
             finally
             {
                 Connection.Close();
@@ -395,10 +386,7 @@ namespace DVLD_DataAccessLayer
                 RowAffected = Command.ExecuteNonQuery();
                
             }
-            catch (Exception)
-            {
-                throw;
-            }
+            catch (Exception ex) { clsEventViewer.SendEventLogApplication("Erorr in Release License " + ex.Message, System.Diagnostics.EventLogEntryType.Error); }
             finally
             {
                 Connection.Close();
