@@ -37,10 +37,11 @@ namespace DVLD_DataAccessLayer
 
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                clsEventViewer.SendEventLogApplication("Erorr in Git All Countries " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
+
             }
             finally
             {
@@ -77,10 +78,11 @@ namespace DVLD_DataAccessLayer
 
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                clsEventViewer.SendEventLogApplication("Erorr in Git Country by ID " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
+
             }
             finally
             {
@@ -118,10 +120,11 @@ namespace DVLD_DataAccessLayer
 
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                
-                throw;
+
+                clsEventViewer.SendEventLogApplication("Erorr in Git Country By Name " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
+
             }
             finally
             {
