@@ -30,10 +30,11 @@ namespace DVLD_DataAccessLayer
                 }
                 Reader.Close();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                
+                clsEventViewer.SendEventLogApplication("Erorr in Git All Base Applicaion Type " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
+
             }
             finally
             {
@@ -61,10 +62,11 @@ namespace DVLD_DataAccessLayer
                 Connection.Open() ;
                 isAffected = (short)Command.ExecuteNonQuery();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                
+                clsEventViewer.SendEventLogApplication("Erorr in Update Applicaion Type " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
+
             }
             finally
             {
@@ -91,10 +93,10 @@ namespace DVLD_DataAccessLayer
                     Fees =Convert.ToSingle(Reader["ApplicationFees"]);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                isAffectied = false;
-                
+                clsEventViewer.SendEventLogApplication("Erorr in Git  Applicaion Type by ID " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
+
             }
             finally
             {
@@ -128,10 +130,11 @@ namespace DVLD_DataAccessLayer
 
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                clsEventViewer.SendEventLogApplication("Erorr in insert new  Applicaion Type " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
 
-                
+
             }
             finally
             {
