@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
+using System.Net.NetworkInformation;
+using System.Text;
+using System.Threading.Tasks;
+
 
 namespace DVLD_DataAccessLayer
 {
@@ -14,28 +17,28 @@ namespace DVLD_DataAccessLayer
         public static DataTable SelectCountreisFoDB()
         {
             DataTable Countries = new DataTable();
-
-            SqlConnection connection = new SqlConnection(ClsConnectionSettings.ConnectionString);
-            string Query = @"select * from Countries";
-
-            SqlCommand Command = new SqlCommand(Query, connection);
             try
             {
-                connection.Open();
-                SqlDataReader Reader = Command.ExecuteReader();
-
-
-                if (Reader.HasRows)
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["ConnectionString"]))
                 {
+                    string Query = @"select * from Countries";
 
-                    Countries.Load(Reader);
+                    using (SqlCommand Command = new SqlCommand(Query, connection))
+                    {
+
+                        connection.Open();
+                        using (SqlDataReader Reader = Command.ExecuteReader())
+                        {
+                            if (Reader.HasRows)
+                            {
+
+                                Countries.Load(Reader);
+                            }
+                            Reader.Close();
+                        }
+                    }
+                    
                 }
-                
-
-                Reader.Close();
-
-
-
             }
             catch (Exception ex)
             {
@@ -43,10 +46,7 @@ namespace DVLD_DataAccessLayer
                 clsEventViewer.SendEventLogApplication("Erorr in Git All Countries " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
 
             }
-            finally
-            {
-                connection.Close();
-            }
+            
 
             return Countries;
         }
@@ -54,29 +54,36 @@ namespace DVLD_DataAccessLayer
         public static bool GetCountryNameByID(int CountryID,ref string CoutryName)
         {
             bool isAffeced = false;
-
-            SqlConnection connection = new SqlConnection(ClsConnectionSettings.ConnectionString);
-            string Query = "SELECT * FROM Countries WHERE CountryID = @CountryID";
-
-            SqlCommand Command = new SqlCommand(Query, connection);
-            Command.Parameters.AddWithValue("@CountryID", CountryID);
             try
             {
-                connection.Open();
-                SqlDataReader Reader = Command.ExecuteReader();
-                if (Reader.Read())
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["ConnectionString"]))
                 {
-                    CoutryName = (string)Reader["CountryName"];
-                    isAffeced = true;
+                    string Query = "SELECT * FROM Countries WHERE CountryID = @CountryID";
+
+                    using (SqlCommand Command = new SqlCommand(Query, connection))
+                    {
+                        Command.Parameters.AddWithValue("@CountryID", CountryID);
+
+                        connection.Open();
+                        using (SqlDataReader Reader = Command.ExecuteReader())
+                        {
+                            if (Reader.Read())
+                            {
+                                CoutryName = (string)Reader["CountryName"];
+                                isAffeced = true;
+                            }
+                            else
+                            {
+                                isAffeced = false;
+                            }
+                            
+                        }
+                    }
+
+
+
+                    
                 }
-                else
-                {
-                    isAffeced = false;
-                }
-                Reader.Close(); 
-
-
-
             }
             catch (Exception ex)
             {
@@ -84,10 +91,7 @@ namespace DVLD_DataAccessLayer
                 clsEventViewer.SendEventLogApplication("Erorr in Git Country by ID " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
 
             }
-            finally
-            {
-                connection.Close();
-            }
+           
 
             return isAffeced;
         }
@@ -95,30 +99,36 @@ namespace DVLD_DataAccessLayer
         public static bool GetCountryIDByName(string CountryName,ref int CountryID)
         {
             bool isAffeced = false;
-
-            SqlConnection connection = new SqlConnection(ClsConnectionSettings.ConnectionString);
-            string Query = "SELECT * FROM Countries WHERE CountryName = @CountryName";
-
-            SqlCommand Command = new SqlCommand(Query, connection);
-            Command.Parameters.AddWithValue("@CountryName", CountryName);
             try
             {
-                connection.Open();
-                SqlDataReader Reader = Command.ExecuteReader();
-                if (Reader.Read()) 
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["ConnectionString"]))
                 {
-                    CountryID = (int)Reader["CountryID"];
-                    isAffeced = true;
+                    string Query = "SELECT * FROM Countries WHERE CountryName = @CountryName";
+
+                    using (SqlCommand Command = new SqlCommand(Query, connection))
+                    {
+                        Command.Parameters.AddWithValue("@CountryName", CountryName);
+
+                        connection.Open();
+                        using (SqlDataReader Reader = Command.ExecuteReader())
+                        {
+                            if (Reader.Read())
+                            {
+                                CountryID = (int)Reader["CountryID"];
+                                isAffeced = true;
+                            }
+                            else
+                            {
+                                isAffeced = false;
+                            }
+                        }
+
+
+                    }
+
+
+                    
                 }
-                else
-                {
-                    isAffeced = false;
-                }
-
-
-                Reader.Close();
-
-
             }
             catch (Exception ex)
             {
@@ -126,10 +136,7 @@ namespace DVLD_DataAccessLayer
                 clsEventViewer.SendEventLogApplication("Erorr in Git Country By Name " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
 
             }
-            finally
-            {
-                connection.Close();
-            }
+           
 
             return isAffeced;
         }

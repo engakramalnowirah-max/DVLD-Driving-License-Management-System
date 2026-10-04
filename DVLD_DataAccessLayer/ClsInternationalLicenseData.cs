@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Data;
+using System.Configuration;
 
 namespace DVLD_DataAccessLayer
 {
@@ -21,11 +22,13 @@ namespace DVLD_DataAccessLayer
             int CreatedByUserID)
         {
             int InternationalLicenseID = -1;
+            try
+            {
+                using (SqlConnection Connection =
+                    new SqlConnection(ConfigurationManager.AppSettings["ConnectionString"]))
+                {
 
-            SqlConnection Connection =
-                new SqlConnection(ClsConnectionSettings.ConnectionString);
-
-            string Query = @"Update InternationalLicenses
+                    string Query = @"Update InternationalLicenses
                              set IsActive=0
                              where DriverID=@DriverID;
 
@@ -34,43 +37,43 @@ namespace DVLD_DataAccessLayer
 
 
 
-                 INSERT INTO InternationalLicenses
-                (ApplicationID, DriverID, IssuedUsingLocalLicenseID,
-                 IssueDate, ExpirationDate, IsActive, CreatedByUserID)
-                VALUES
-                (@ApplicationID, @DriverID, @IssuedUsingLocalLicenseID,
-                 @IssueDate, @ExpirationDate, @IsActive, @CreatedByUserID);
-                SELECT SCOPE_IDENTITY();";
+                               INSERT INTO InternationalLicenses
+                              (ApplicationID, DriverID, IssuedUsingLocalLicenseID,
+                               IssueDate, ExpirationDate, IsActive, CreatedByUserID)
+                              VALUES
+                              (@ApplicationID, @DriverID, @IssuedUsingLocalLicenseID,
+                               @IssueDate, @ExpirationDate, @IsActive, @CreatedByUserID);
+                              SELECT SCOPE_IDENTITY();";
 
-            SqlCommand Command = new SqlCommand(Query, Connection);
+                    using (SqlCommand Command = new SqlCommand(Query, Connection))
+                    {
 
-            Command.Parameters.AddWithValue("@ApplicationID", ApplicationID);
-            Command.Parameters.AddWithValue("@DriverID", DriverID);
-            Command.Parameters.AddWithValue("@IssuedUsingLocalLicenseID", IssuedUsingLocalLicenseID);
-            Command.Parameters.AddWithValue("@IssueDate", IssueDate);
-            Command.Parameters.AddWithValue("@ExpirationDate", ExpirationDate);
-            Command.Parameters.AddWithValue("@IsActive", IsActive);
-            Command.Parameters.AddWithValue("@CreatedByUserID", CreatedByUserID);
+                        Command.Parameters.AddWithValue("@ApplicationID", ApplicationID);
+                        Command.Parameters.AddWithValue("@DriverID", DriverID);
+                        Command.Parameters.AddWithValue("@IssuedUsingLocalLicenseID", IssuedUsingLocalLicenseID);
+                        Command.Parameters.AddWithValue("@IssueDate", IssueDate);
+                        Command.Parameters.AddWithValue("@ExpirationDate", ExpirationDate);
+                        Command.Parameters.AddWithValue("@IsActive", IsActive);
+                        Command.Parameters.AddWithValue("@CreatedByUserID", CreatedByUserID);
 
-            try
-            {
-                Connection.Open();
 
-                object Result = Command.ExecuteScalar();
+                        Connection.Open();
 
-                if (Result != null && int.TryParse(Result.ToString(), out int ID))
-                {
-                    InternationalLicenseID = ID;
+                        object Result = Command.ExecuteScalar();
+
+                        if (Result != null && int.TryParse(Result.ToString(), out int ID))
+                        {
+                            InternationalLicenseID = ID;
+                        }
+                    }
                 }
+                
             }
             catch (Exception ex)
             {
                 clsEventViewer.SendEventLogApplication("Erorr in insert new International License " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
             }
-            finally
-            {
-                Connection.Close();
-            }
+           
 
             return InternationalLicenseID;
         }
@@ -87,46 +90,49 @@ namespace DVLD_DataAccessLayer
             ref int CreatedByUserID)
         {
             bool IsFound = false;
-
-            SqlConnection Connection =
-                new SqlConnection(ClsConnectionSettings.ConnectionString);
-
-            string Query = @"SELECT * FROM InternationalLicenses
-                             WHERE InternationalLicenseID = @InternationalLicenseID";
-
-            SqlCommand Command = new SqlCommand(Query, Connection);
-
-            Command.Parameters.AddWithValue("@InternationalLicenseID", InternationalLicenseID);
-
             try
             {
-                Connection.Open();
-
-                SqlDataReader Reader = Command.ExecuteReader();
-
-                if (Reader.Read())
+                using (SqlConnection Connection =
+                    new SqlConnection(ConfigurationManager.AppSettings["ConnectionString"]))
                 {
-                    IsFound = true;
 
-                    ApplicationID = (int)Reader["ApplicationID"];
-                    DriverID = (int)Reader["DriverID"];
-                    IssuedUsingLocalLicenseID = (int)Reader["IssuedUsingLocalLicenseID"];
-                    IssueDate = (DateTime)Reader["IssueDate"];
-                    ExpirationDate = (DateTime)Reader["ExpirationDate"];
-                    IsActive = (bool)Reader["IsActive"];
-                    CreatedByUserID = (int)Reader["CreatedByUserID"];
+                    string Query = @"SELECT * FROM InternationalLicenses
+                             WHERE InternationalLicenseID = @InternationalLicenseID";
+
+                    using (SqlCommand Command = new SqlCommand(Query, Connection))
+                    {
+
+                        Command.Parameters.AddWithValue("@InternationalLicenseID", InternationalLicenseID);
+
+                        Connection.Open();
+
+                        using (SqlDataReader Reader = Command.ExecuteReader())
+                        {
+
+                            if (Reader.Read())
+                            {
+                                IsFound = true;
+
+                                ApplicationID = (int)Reader["ApplicationID"];
+                                DriverID = (int)Reader["DriverID"];
+                                IssuedUsingLocalLicenseID = (int)Reader["IssuedUsingLocalLicenseID"];
+                                IssueDate = (DateTime)Reader["IssueDate"];
+                                ExpirationDate = (DateTime)Reader["ExpirationDate"];
+                                IsActive = (bool)Reader["IsActive"];
+                                CreatedByUserID = (int)Reader["CreatedByUserID"];
+                            }
+                        }
+
+                        
+                    }
+                    
                 }
-
-                Reader.Close();
             }
             catch (Exception ex)
             {
                 clsEventViewer.SendEventLogApplication("Erorr in Git International Licnese By ID " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
             }
-            finally
-            {
-                Connection.Close();
-            }
+           
 
             return IsFound;
         }
@@ -199,11 +205,13 @@ namespace DVLD_DataAccessLayer
             int CreatedByUserID)
         {
             int RowsAffected = 0;
+            try
+            {
+                using (SqlConnection Connection =
+                    new SqlConnection(ConfigurationManager.AppSettings["ConnectionString"]))
+                {
 
-            SqlConnection Connection =
-                new SqlConnection(ClsConnectionSettings.ConnectionString);
-
-            string Query = @"UPDATE InternationalLicenses
+                    string Query = @"UPDATE InternationalLicenses
                              SET ApplicationID = @ApplicationID,
                                  DriverID = @DriverID,
                                  IssuedUsingLocalLicenseID = @IssuedUsingLocalLicenseID,
@@ -213,30 +221,30 @@ namespace DVLD_DataAccessLayer
                                  CreatedByUserID = @CreatedByUserID
                              WHERE InternationalLicenseID = @InternationalLicenseID";
 
-            SqlCommand Command = new SqlCommand(Query, Connection);
+                    using (SqlCommand Command = new SqlCommand(Query, Connection))
+                    {
 
-            Command.Parameters.AddWithValue("@InternationalLicenseID", InternationalLicenseID);
-            Command.Parameters.AddWithValue("@ApplicationID", ApplicationID);
-            Command.Parameters.AddWithValue("@DriverID", DriverID);
-            Command.Parameters.AddWithValue("@IssuedUsingLocalLicenseID", IssuedUsingLocalLicenseID);
-            Command.Parameters.AddWithValue("@IssueDate", IssueDate);
-            Command.Parameters.AddWithValue("@ExpirationDate", ExpirationDate);
-            Command.Parameters.AddWithValue("@IsActive", IsActive);
-            Command.Parameters.AddWithValue("@CreatedByUserID", CreatedByUserID);
+                        Command.Parameters.AddWithValue("@InternationalLicenseID", InternationalLicenseID);
+                        Command.Parameters.AddWithValue("@ApplicationID", ApplicationID);
+                        Command.Parameters.AddWithValue("@DriverID", DriverID);
+                        Command.Parameters.AddWithValue("@IssuedUsingLocalLicenseID", IssuedUsingLocalLicenseID);
+                        Command.Parameters.AddWithValue("@IssueDate", IssueDate);
+                        Command.Parameters.AddWithValue("@ExpirationDate", ExpirationDate);
+                        Command.Parameters.AddWithValue("@IsActive", IsActive);
+                        Command.Parameters.AddWithValue("@CreatedByUserID", CreatedByUserID);
 
-            try
-            {
-                Connection.Open();
-                RowsAffected = Command.ExecuteNonQuery();
+
+                        Connection.Open();
+                        RowsAffected = Command.ExecuteNonQuery();
+                    }
+                }
+                
             }
             catch (Exception ex)
             {
                 clsEventViewer.SendEventLogApplication("Erorr in Update International License " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
             }
-            finally
-            {
-                Connection.Close();
-            }
+            
 
             return (RowsAffected > 0);
         }
@@ -277,33 +285,36 @@ namespace DVLD_DataAccessLayer
         public static DataTable GetAllInternationalLicenses()
         {
             DataTable dt = new DataTable();
-
-            SqlConnection Connection =
-                new SqlConnection(ClsConnectionSettings.ConnectionString);
-
-            string Query = @"SELECT * FROM InternationalLicenses ORDER BY IsActive,ExpirationDate desc";
-
-            SqlCommand Command = new SqlCommand(Query, Connection);
-
             try
             {
-                Connection.Open();
+                using (SqlConnection Connection =
+                    new SqlConnection(ConfigurationManager.AppSettings["ConnectionString"]))
+                {
 
-                SqlDataReader Reader = Command.ExecuteReader();
+                    string Query = @"SELECT * FROM InternationalLicenses ORDER BY IsActive,ExpirationDate desc";
 
-                if (Reader.HasRows)
-                    dt.Load(Reader);
+                    using (SqlCommand Command = new SqlCommand(Query, Connection))
+                    {
 
-                Reader.Close();
+
+                        Connection.Open();
+
+                        using (SqlDataReader Reader = Command.ExecuteReader())
+                        {
+
+                            if (Reader.HasRows)
+                                dt.Load(Reader);
+
+                           
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
                 clsEventViewer.SendEventLogApplication("Erorr in Git International Licneses " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
             }
-            finally
-            {
-                Connection.Close();
-            }
+          
 
             return dt;
         }
@@ -355,36 +366,39 @@ namespace DVLD_DataAccessLayer
         public static int GetActiveInternationalLicenseIDByDriverID(int DriverID)
         {
             int ID = -1;
+            try
+            {
+                using (SqlConnection Connection =
+                    new SqlConnection(ConfigurationManager.AppSettings["ConnectionString"]))
+                {
 
-            SqlConnection Connection =
-                new SqlConnection(ClsConnectionSettings.ConnectionString);
-
-            string Query = @"SELECT TOP 1 InternationalLicenseID
+                    string Query = @"SELECT TOP 1 InternationalLicenseID
                              FROM InternationalLicenses
                              WHERE DriverID = @DriverID and GETDATE() >= IssueDate AND GETDATE() <= ExpirationDate
                              ORDER BY ExpirationDate DESC";
 
-            SqlCommand Command = new SqlCommand(Query, Connection);
+                    using (SqlCommand Command = new SqlCommand(Query, Connection))
+                    {
 
-            Command.Parameters.AddWithValue("@DriverID", DriverID);
+                        Command.Parameters.AddWithValue("@DriverID", DriverID);
 
-            try
-            {
-                Connection.Open();
 
-                object Result = Command.ExecuteScalar();
+                        Connection.Open();
 
-                if (Result != null && int.TryParse(Result.ToString(), out int Val))
-                    ID = Val;
+                        object Result = Command.ExecuteScalar();
+
+                        if (Result != null && int.TryParse(Result.ToString(), out int Val))
+                            ID = Val;
+                    }
+
+                }
+                
             }
             catch (Exception ex)
             {
                 clsEventViewer.SendEventLogApplication("Erorr in Git international License ID By Driver ID " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
             }
-            finally
-            {
-                Connection.Close();
-            }
+         
 
             return ID;
         }
@@ -393,43 +407,46 @@ namespace DVLD_DataAccessLayer
         {
 
             DataTable dt = new DataTable();
-            SqlConnection connection = new SqlConnection(ClsConnectionSettings.ConnectionString);
-
-            string query = @"
-            SELECT    InternationalLicenseID, ApplicationID,
-		                IssuedUsingLocalLicenseID , IssueDate, 
-                        ExpirationDate, IsActive
-		    from InternationalLicenses where DriverID=@DriverID
-                order by ExpirationDate desc";
-
-            SqlCommand command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@DriverID", DriverID);
-
             try
             {
-                connection.Open();
-
-                SqlDataReader reader = command.ExecuteReader();
-
-                if (reader.HasRows)
-
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["ConnectionString"]))
                 {
-                    dt.Load(reader);
+
+                    string query = @"
+                                    SELECT    InternationalLicenseID, ApplicationID,
+		                                        IssuedUsingLocalLicenseID , IssueDate, 
+                                                ExpirationDate, IsActive
+		                            from InternationalLicenses where DriverID=@DriverID
+                                        order by ExpirationDate desc";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@DriverID", DriverID);
+
+                        connection.Open();
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+
+                            if (reader.HasRows)
+
+                            {
+                                dt.Load(reader);
+                            }
+                        }
+                       
+                    }
                 }
+                
 
-                reader.Close();
 
-
+                
             }
-
             catch (Exception ex)
             {
                 clsEventViewer.SendEventLogApplication("Erorr in Git Driver International Licenses " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
             }
-            finally
-            {
-                connection.Close();
-            }
+            
 
             return dt;
 
