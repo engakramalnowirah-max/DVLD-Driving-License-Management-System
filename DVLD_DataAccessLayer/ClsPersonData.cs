@@ -69,8 +69,23 @@ namespace DVLD_DataAccessLayer
             {
                 using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["ConnectionString"]))
                 {
-                    string Query = @"INSERT INTO People (NationalNo,FirstName,SecondName ,ThirdName,LastName,DateOfBirth,Gendor ,Address,Phone ,Email,NationalityCountryID,ImagePath)    
-                           VALUES (@NationalNo,@FirstName,@SecondName,@ThirdName,@LastName,@DateOfBirth,@Gendor,@Address,@phone,@Email,@CountryID,@ImagePath)SELECT SCOPE_IDENTITY()";
+                    string Query = @"declare  @ID int;
+                                     EXEC	[dbo].[SP_AddNewPerson]
+		                             @NationalNo = @NationalNo ,
+		                             @FirstName = @FirstName,
+		                             @SecondName = @SecondName,
+		                             @ThirdName = @ThirdName,
+		                             @LastName = @LastName,
+		                             @DateOfBirth = @DateOfBirth,
+		                             @Gendor = @Gendor,
+		                             @Address = @Address,
+		                             @phone = @phone,
+		                             @Email = @Email,
+		                             @CountryID = @CountryID,
+		                             @ImagePath = @ImagePath,
+		                             @PersonID = @ID OUTPUT;
+
+                                      SELECT @ID";
                     using (SqlCommand command = new SqlCommand(Query, connection))
                     {
                         command.Parameters.AddWithValue("@NationalNo", NationalNo);
@@ -99,9 +114,8 @@ namespace DVLD_DataAccessLayer
                             command.Parameters.AddWithValue("@ImagePath", System.DBNull.Value);
 
 
-
                         connection.Open();
-                        object obj = command.ExecuteScalar();
+                        object obj = command.ExecuteNonQuery();
                         if (obj != null && int.TryParse(obj.ToString(), out int number))
                         {
                             ID = number;
