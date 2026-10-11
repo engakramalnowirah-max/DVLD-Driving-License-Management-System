@@ -275,7 +275,7 @@ namespace Project_DVLD_PresentaionLayer
             }
 
 
-            if (!(txtNationalNo.Text.Trim() != _Person.NationalNo && ClsPresone.isPersonExist(txtNationalNo.Text.Trim())))
+            if ( _Mode == enMode.AddNew && ClsPresone.isPersonExist(txtNationalNo.Text.Trim()))
             {
                 errorProvider1.SetError(txtNationalNo, "National Number is used for another person!");
                 e.Cancel = true;

@@ -42,21 +42,12 @@ namespace Project_DVLD_PresentaionLayer
                 dgvPeople.CurrentCell = dgvPeople.Rows[e.RowIndex].Cells[0];
             }
         }
-        private void _RefrechDataToDGV()
-        {
-                  DataTable _dtAllPeople = ClsPresone.GetAllPersons();
-
-              DataTable _dtPeople = dtAllPeople.DefaultView.ToTable(false, "PersonID", "NationalNo", "FirstName", "SecondName", "ThirdName", "LastName",
-                       "GendorCaption", "DateOfBirth", "CountryName", "Phone", "Email");
-
-                               dgvPeople.DataSource = _dtPeople;
-                               
-                               lblNumberOfRows.Text = dgvPeople.Rows.Count.ToString(); 
-        }
+        
 
         private void frmPeople_Load(object sender, EventArgs e)
         {
-            dgvPeople.DataSource = dtPeople;
+            dgvPeople.DataSource = ClsPresone.GetAllPersons().DefaultView.ToTable(false, "PersonID", "NationalNo", "FirstName", "SecondName", "ThirdName", "LastName",
+                       "GendorCaption", "DateOfBirth", "CountryName", "Phone", "Email"); 
             cbFilterBy.SelectedIndex = 0;
             lblNumberOfRows.Text = dgvPeople.Rows.Count.ToString();
             if(dgvPeople.Rows.Count > 0 )
@@ -110,7 +101,7 @@ namespace Project_DVLD_PresentaionLayer
         {
             frmAddEditPersoncs AddPerson= new frmAddEditPersoncs();
             AddPerson.ShowDialog(this);
-            _RefrechDataToDGV();
+            
             frmPeople_Load(null, null);
 
 
@@ -120,14 +111,14 @@ namespace Project_DVLD_PresentaionLayer
         {
             frmShowPersonInfo DetailsPerson = new frmShowPersonInfo((int)dgvPeople.CurrentRow.Cells[0].Value);
             DetailsPerson.ShowDialog(this);
-            _RefrechDataToDGV();
+            
         }
 
         private void editToolStripMenuItem_Click(object sender, EventArgs e)
         {
             frmAddEditPersoncs AddPerson = new frmAddEditPersoncs((int)dgvPeople.CurrentRow.Cells[0].Value);
             AddPerson.ShowDialog(this);
-            _RefrechDataToDGV();
+            
             frmPeople_Load(null, null);
         }
 
@@ -135,7 +126,7 @@ namespace Project_DVLD_PresentaionLayer
         {
             frmAddEditPersoncs AddPerson = new frmAddEditPersoncs();
             AddPerson.ShowDialog(this);
-            _RefrechDataToDGV();
+            
             frmPeople_Load(null, null);
         }
 
@@ -146,7 +137,7 @@ namespace Project_DVLD_PresentaionLayer
                 if (ClsPresone.Delete((int)dgvPeople.CurrentRow.Cells[0].Value))
                 {
                     MessageBox.Show("Delete Person Successfully :-) ", "Successfully", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    _RefrechDataToDGV();
+                    
                     frmPeople_Load(null, null);
                     return;
                 }
@@ -162,7 +153,7 @@ namespace Project_DVLD_PresentaionLayer
         {
             frmFindPerson FindPerson = new frmFindPerson();
             FindPerson.ShowDialog(this);
-            _RefrechDataToDGV();
+            frmPeople_Load(null, null);
         }
 
         private void txtValueWithFilter_TextChanged(object sender, EventArgs e)
