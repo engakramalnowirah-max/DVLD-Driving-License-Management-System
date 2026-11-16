@@ -202,20 +202,22 @@ namespace DVLD_DataAccessLayer
                             Connection.Open();
                             using (SqlDataReader reader = Command.ExecuteReader())
                             {
-                                
-                                    TestTypeID = (int)reader["TestTypeID"];
-                                    LocalDrivingLicenseApplicationID = (int)reader["LocalDrivingLicenseApplicationID"];
-                                    AppointmentDate = (DateTime)reader["AppointmentDate"];
-                                    PaidFees = Convert.ToSingle(reader["PaidFees"]);
-                                    CreateByUserID = (int)reader["CreatedByUserID"];
-                                    IsLocked = Convert.ToBoolean(reader["IsLocked"]);
-                                    if (reader["RetakeTestApplicationID"] != System.DBNull.Value)
-                                        RetakTestApplicationID = (int)reader["RetakeTestApplicationID"];
-                                    else
-                                    {
-                                        RetakTestApplicationID = -1;
-                                    }
-                                    isAffected = true;
+                                  if (reader.Read())
+                                  {
+                                      TestTypeID = (int)reader["TestTypeID"];
+                                      LocalDrivingLicenseApplicationID = (int)reader["LocalDrivingLicenseApplicationID"];
+                                      AppointmentDate = (DateTime)reader["AppointmentDate"];
+                                      PaidFees = Convert.ToSingle(reader["PaidFees"]);
+                                      CreateByUserID = (int)reader["CreatedByUserID"];
+                                      IsLocked = Convert.ToBoolean(reader["IsLocked"]);
+                                      if (reader["RetakeTestApplicationID"] != System.DBNull.Value)
+                                          RetakTestApplicationID = (int)reader["RetakeTestApplicationID"];
+                                      else
+                                      {
+                                          RetakTestApplicationID = -1;
+                                      }
+                                      isAffected = true;
+                                  }
                                 
                                 
                             }

@@ -75,8 +75,9 @@ namespace DVLD_DataAccessLayer
                                      @IsReleased, @ReleaseDate, @ReleasedByUserID, @ReleaseApplicationID);
                                     SELECT SCOPE_IDENTITY();";
 
-                    using (SqlCommand Command = new SqlCommand(Query, Connection))
+                    using (SqlCommand Command = new SqlCommand("SP_AddNewDtainedLicenses", Connection))
                     {
+                        Command.CommandType = CommandType.StoredProcedure;
 
                         Command.Parameters.AddWithValue("@LicenseID", LicenseID);
                         Command.Parameters.AddWithValue("@DetainDate", DetainDate);
@@ -94,12 +95,16 @@ namespace DVLD_DataAccessLayer
                             ReleaseApplicationID.HasValue ? (object)ReleaseApplicationID.Value : DBNull.Value);
 
 
+                        var outputParamtere = Command.Parameters.Add("", SqlDbType.Int);
+                        {
+                            outputParamtere.Direction = ParameterDirection.Output;
+                        }
                         Connection.Open();
 
-                        object Result = Command.ExecuteScalar();
+                        Command.ExecuteNonQuery();
 
-                        if (Result != null && int.TryParse(Result.ToString(), out int ID))
-                            DetainID = ID;
+                        if (outputParamtere.Value != null)
+                            DetainID = Convert.ToInt32(outputParamtere.Value);
                     }
                 }
                 

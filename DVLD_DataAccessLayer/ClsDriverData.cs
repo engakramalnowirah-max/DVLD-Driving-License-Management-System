@@ -182,12 +182,12 @@ namespace DVLD_DataAccessLayer
                     new SqlConnection(ConfigurationManager.AppSettings["ConnectionString"]))
                 {
 
-                    string Query = @"SELECT * FROM Drivers_View ";
+                    //string Query = @"SELECT * FROM Drivers_View ";
 
-                    using (SqlCommand Command = new SqlCommand(Query, Connection))
+                    using (SqlCommand Command = new SqlCommand("SP_Drivers_View", Connection))
                     {
 
-
+                        Command.CommandType = CommandType.StoredProcedure;
                         Connection.Open();
 
                         using (SqlDataReader Reader = Command.ExecuteReader())

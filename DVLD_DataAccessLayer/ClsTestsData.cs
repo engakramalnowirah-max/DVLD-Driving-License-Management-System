@@ -18,39 +18,25 @@ namespace DVLD_DataAccessLayer
             {
                 using (SqlConnection Connection = new SqlConnection(ConfigurationManager.AppSettings["ConnectionString"]))
                 {
-                    string Query = @"INSERT INTO Tests
-                                 (TestAppointmentID
-                                 ,TestResult
-                                 ,Notes
-                                 ,CreatedByUserID)
-                                  VALUES
-                                 (@TestAppointmentID
-                                 ,@TestResult
-                                 ,@Notes
-                                 ,@CreatedByUserID);
-                                 
-                                 
-                                  update TestAppointments
-                                  set IsLocked = 1
-                                  where TestAppointmentID = @TestAppointmentID
-                                 
-                                     SElECT SCOPE_IDENTITY();";
-                    using (SqlCommand Command = new SqlCommand(Query, Connection))
+                    
+
+                    using (SqlCommand Command = new SqlCommand("PC_InsertTest", Connection))
                     {
+                        Command.CommandType = CommandType.StoredProcedure;
+
                         Command.Parameters.AddWithValue("@TestAppointmentID", TestAppointmentID);
                         Command.Parameters.AddWithValue("@TestResult", TestResult);
                         Command.Parameters.AddWithValue("@Notes", Notes);
                         Command.Parameters.AddWithValue("@CreatedByUserID", CreatedByUserID);
 
+                        SqlParameter outputID = Command.Parameters.Add("@TestID", SqlDbType.Int);
 
-
+                        outputID.Direction = ParameterDirection.Output;
 
                         Connection.Open();
-                        object obj = Command.ExecuteScalar();
-                        if (obj != null && int.TryParse(obj.ToString(), out int Result))
-                        {
-                            TestID = Result;
-                        }
+                         Command.ExecuteScalar();
+                        if (outputID.Value != DBNull.Value)
+                            TestID = Convert.ToInt32(outputID.Value);
                     }
 
                     

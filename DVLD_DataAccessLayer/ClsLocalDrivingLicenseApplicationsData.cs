@@ -20,10 +20,11 @@ namespace DVLD_DataAccessLayer
             {
                 using (SqlConnection Connection = new SqlConnection(ConfigurationManager.AppSettings["ConnectionString"]))
                 {
-                    string Query = @"select * from LocalDrivingLicenseApplications_View";
-                    using (SqlCommand Command = new SqlCommand(Query, Connection))
+                    //string Query = @"select * from LocalDrivingLicenseApplications_View";
+                    using (SqlCommand Command = new SqlCommand("SP_LocalDrivingLicenseApplications_View", Connection))
                     {
 
+                        Command.CommandType = CommandType.StoredProcedure;
                         Connection.Open();
                         using (SqlDataReader Reader = Command.ExecuteReader())
                         {
@@ -96,12 +97,12 @@ namespace DVLD_DataAccessLayer
             {
                 using (SqlConnection Connection = new SqlConnection(ConfigurationManager.AppSettings["ConnectionString"]))
                 {
-                    string Query = @"UPDATE LocalDrivingLicenseApplications
-                    SET ApplicationID = @ApplicationID
-                       ,LicenseClassID = @LicenseClassID
-                     WHERE LocalDrivingLicenseApplicationID = @LocalDrivingLicenseApplicationID";
+                    //string Query = @"UPDATE LocalDrivingLicenseApplications
+                    //SET ApplicationID = @ApplicationID
+                    //   ,LicenseClassID = @LicenseClassID
+                    // WHERE LocalDrivingLicenseApplicationID = @LocalDrivingLicenseApplicationID";
 
-                    using (SqlCommand Command = new SqlCommand(Query, Connection))
+                    using (SqlCommand Command = new SqlCommand("SP_UpdateLDLAplication", Connection))
                     {
                         Command.Parameters.AddWithValue("@LocalDrivingLicenseApplicationID", LocalDrivingLicenseApplicationID);
                         Command.Parameters.AddWithValue("@ApplicationID", ApplicationID);

@@ -8,6 +8,7 @@ using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
+using System.Diagnostics;
 
 namespace DVLD_DataAccessLayer
 {
@@ -202,9 +203,10 @@ namespace DVLD_DataAccessLayer
             {
                 using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["ConnectionString"]))
                 { 
-                    string Query = @"Delete FROM People   WHERE PersonID = @PersonID";
-                    using (SqlCommand command = new SqlCommand(Query, connection))
+                    //string Query = @"Delete FROM People   WHERE PersonID = @PersonID";
+                    using (SqlCommand command = new SqlCommand("SP_DeletePerson", connection))
                     {
+                        command.CommandType = CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@PersonID", PersonID);
 
                         connection.Open();
@@ -350,29 +352,36 @@ namespace DVLD_DataAccessLayer
         {
               
         
-            int IsAfficted = -1;
+            
             try
             {
                 using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["ConnectionString"]))
                 {
-                    string Query = @"SELECT Founde=1  FROM People  WHERE PersonID = @PersonID";
-                    using (SqlCommand command = new SqlCommand(Query, connection))
+                    //string Query = @"SELECT Founde=1  FROM People  WHERE PersonID = @PersonID";
+                    using (SqlCommand command = new SqlCommand("SP_IsPersonExistByPersonID", connection))
                     {
+                        command.CommandType = CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@PersonID", PersonID);
 
+                        SqlParameter Returnvalue = command.Parameters.Add("@RetrunValue", SqlDbType.Int);
+                        Returnvalue.Direction = ParameterDirection.ReturnValue;
+
                         connection.Open();
-                        IsAfficted = command.ExecuteNonQuery();
+                        command.ExecuteNonQuery();
+
+                        return Convert.ToInt32(Returnvalue.Value) == 1;
                     }
                     
                 }
             }
             catch (Exception)
             {
+                clsEventViewer.SendEventLogApplication("Error checking person existence: " + ex.Message, EventLogEntryType.Error);
 
-
+                
             }
-            
-            return (IsAfficted != 0);
+
+            return false;
         
         }
 
@@ -397,10 +406,12 @@ namespace DVLD_DataAccessLayer
                     
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                clsEventViewer.SendEventLogApplication("Error checking person existence: " + ex.Message,EventLogEntryType.Error);
 
                 throw;
+               
             }
             
             return (IsAfficted != 0);

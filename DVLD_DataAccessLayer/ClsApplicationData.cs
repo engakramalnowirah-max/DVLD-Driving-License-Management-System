@@ -40,6 +40,7 @@ namespace DVLD_DataAccessLayer
             catch (Exception ex)
             {
                 clsEventViewer.SendEventLogApplication("Erorr in Git All Applicaion " + ex.Message, System.Diagnostics.EventLogEntryType.Error);
+                throw;
 
             }
             
@@ -54,24 +55,25 @@ namespace DVLD_DataAccessLayer
             {
                 using (SqlConnection Connection = new SqlConnection(ConfigurationManager.AppSettings["ConnectionString"]))
                 {
-                    string Query = @"INSERT INTO Applications
-                                 (ApplicantPersonID
-                                 ,ApplicationDate
-                                 ,ApplicationTypeID
-                                 ,ApplicationStatus
-                                 ,LastStatusDate
-                                 ,PaidFees
-                                 ,CreatedByUserID)
-                                  VALUES
-                                 (@ApplicantPersonID
-                                 ,@ApplicationDate
-                                 ,@ApplicationTypeID
-                                 ,@ApplicationStatus
-                                 ,@LastStatusDate
-                                 ,@PaidFees
-                                 ,@CreatedByUserID)SELECT SCOPE_IDENTITY()";
-                    using (SqlCommand Command = new SqlCommand(Query, Connection))
+                    //string Query = @"INSERT INTO Applications
+                    //             (ApplicantPersonID
+                    //             ,ApplicationDate
+                    //             ,ApplicationTypeID
+                    //             ,ApplicationStatus
+                    //             ,LastStatusDate
+                    //             ,PaidFees
+                    //             ,CreatedByUserID)
+                    //              VALUES
+                    //             (@ApplicantPersonID
+                    //             ,@ApplicationDate
+                    //             ,@ApplicationTypeID
+                    //             ,@ApplicationStatus
+                    //             ,@LastStatusDate
+                    //             ,@PaidFees
+                    //             ,@CreatedByUserID)SELECT SCOPE_IDENTITY()";
+                    using (SqlCommand Command = new SqlCommand("SP_AddNewApplication", Connection))
                     {
+                        Command.CommandType = CommandType.StoredProcedure;
                         Command.Parameters.AddWithValue("@ApplicantPersonID", @ApplicantPersonID);
                         Command.Parameters.AddWithValue("@ApplicationDate", ApplicationDate);
                         Command.Parameters.AddWithValue("@ApplicationTypeID", ApplicationTypeID);
@@ -79,14 +81,17 @@ namespace DVLD_DataAccessLayer
                         Command.Parameters.AddWithValue("@LastStatusDate", LastStatusDate);
                         Command.Parameters.AddWithValue("@PaidFees", PaidFees);
                         Command.Parameters.AddWithValue("@CreatedByUserID", CreatedByUserID);
-                        if (Connection.State == ConnectionState.Open)
-                            Connection.Close();
+
+                        SqlParameter OutputParamert = Command.Parameters.Add("@NewApplicationID", SqlDbType.Int);
+                        {
+                            OutputParamert.Direction = ParameterDirection.Output;
+                        };
 
                         Connection.Open();
-                        object obj = Command.ExecuteScalar();
-                        if (obj != null && int.TryParse(obj.ToString(), out int Result))
+                        Command.ExecuteScalar();
+                        if (OutputParamert.Value != null) 
                         {
-                            ApplicationID = Result;
+                            ApplicationID = Convert.ToInt32(OutputParamert.Value);
                         }
                     }
                     

@@ -21,10 +21,10 @@ namespace DVLD_DataAccessLayer
             {
                 using (SqlConnection Connection = new SqlConnection(ConfigurationManager.AppSettings["ConnectionString"]))
                 {
-                    string Query = @"SELECT * FROM ApplicationTypes";
-                    using (SqlCommand Command = new SqlCommand(Query, Connection))
+                    //string Query = @"SELECT * FROM ApplicationTypes";
+                    using (SqlCommand Command = new SqlCommand("SP_GetAllApplicationType", Connection))
                     {
-
+                        Command.CommandType = CommandType.StoredProcedure;
                         Connection.Open();
                         using (SqlDataReader Reader = Command.ExecuteReader())
                         {
@@ -126,23 +126,30 @@ namespace DVLD_DataAccessLayer
             {
                 using (SqlConnection Connection = new SqlConnection(ConfigurationManager.AppSettings["ConnectionString"]))
                 {
-                    string Query = @"INSERT INTO ApplicationTypes
-                             (ApplicationTypeTitle
-                             ,ApplicationFees)
-                              VALUES
-                             (@Title
-                             ,@Fees)SELECT SCOPE_IDENTITY()";
-                    using (SqlCommand Comand = new SqlCommand(Query, Connection))
+                    //string Query = @"INSERT INTO ApplicationTypes
+                    //         (ApplicationTypeTitle
+                    //         ,ApplicationFees)
+                    //          VALUES
+                    //         (@Title
+                    //         ,@Fees)SELECT SCOPE_IDENTITY()";
+                    using (SqlCommand Comand = new SqlCommand("SP_AddNewApplicationType", Connection))
                     {
+                        Comand.CommandType = CommandType.StoredProcedure;
+                    
+                    
                         Comand.Parameters.AddWithValue("@Title", Title);
                         Comand.Parameters.AddWithValue("@Fees", Fees);
 
-
-                        Connection.Open();
-                        object obj = Comand.ExecuteScalar();
-                        if (obj != null && int.TryParse(obj.ToString(), out int Reselte))
+                        SqlParameter outputparam = Comand.Parameters.Add("@newApplicationTypeID", SqlDbType.Int);
                         {
-                            isAffectied = Reselte;
+                            outputparam.Direction = ParameterDirection.Output;
+                        };
+                        
+                        Connection.Open();
+                        Comand.ExecuteNonQuery();
+                        if (outputparam.Value != null) 
+                        {
+                            isAffectied = Convert.ToInt32(outputparam.Value);
                         }
                     }
 
