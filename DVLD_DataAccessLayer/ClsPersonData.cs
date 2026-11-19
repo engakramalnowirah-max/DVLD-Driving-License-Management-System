@@ -374,7 +374,7 @@ namespace DVLD_DataAccessLayer
                     
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 clsEventViewer.SendEventLogApplication("Error checking person existence: " + ex.Message, EventLogEntryType.Error);
 

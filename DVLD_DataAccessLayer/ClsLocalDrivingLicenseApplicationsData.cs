@@ -232,30 +232,36 @@ namespace DVLD_DataAccessLayer
 
         public static bool DoesAttendTestType(int LocalDrivingLicenseApplicationID, int TestTypeID)
         {
-            bool isFound = false;
+            
             try
             {
                 using (SqlConnection Connection = new SqlConnection(ConfigurationManager.AppSettings["ConnectionString"]))
                 {
-                    string Query = @"SELECT top 1 Found=1
-                            FROM LocalDrivingLicenseApplications INNER JOIN
-                                 TestAppointments ON LocalDrivingLicenseApplications.LocalDrivingLicenseApplicationID = TestAppointments.LocalDrivingLicenseApplicationID INNER JOIN
-                                 Tests ON TestAppointments.TestAppointmentID = Tests.TestAppointmentID
-                            WHERE
-                            (LocalDrivingLicenseApplications.LocalDrivingLicenseApplicationID = @LocalDrivingLicenseApplicationID) 
-                            AND(TestAppointments.TestTypeID = @TestTypeID)
-                            ORDER BY TestAppointments.TestAppointmentID desc";
-                    using (SqlCommand Command = new SqlCommand(Query, Connection))
+                    //string Query = @"SELECT top 1 Found=1
+                    //        FROM LocalDrivingLicenseApplications INNER JOIN
+                    //             TestAppointments ON LocalDrivingLicenseApplications.LocalDrivingLicenseApplicationID = TestAppointments.LocalDrivingLicenseApplicationID INNER JOIN
+                    //             Tests ON TestAppointments.TestAppointmentID = Tests.TestAppointmentID
+                    //        WHERE
+                    //        (LocalDrivingLicenseApplications.LocalDrivingLicenseApplicationID = @LocalDrivingLicenseApplicationID) 
+                    //        AND(TestAppointments.TestTypeID = @TestTypeID)
+                    //        ORDER BY TestAppointments.TestAppointmentID desc";
+                    using (SqlCommand Command = new SqlCommand("SP_IsDoesAttendTestType", Connection))
                     {
+                        Command.CommandType = CommandType.StoredProcedure;
                         Command.Parameters.AddWithValue("@LocalDrivingLicenseApplicationID", LocalDrivingLicenseApplicationID);
                         Command.Parameters.AddWithValue("@TestTypeID", TestTypeID);
 
-                        Connection.Open();
-                        object Reslte = Command.ExecuteScalar();
-                        if (Reslte != null)
+                        SqlParameter ReturnResult = Command.Parameters.Add("@ResturnResult",SqlDbType.Int);
                         {
-                            isFound = true;
+                            ReturnResult.Direction = ParameterDirection.ReturnValue;
                         }
+                        Connection.Open();
+                        Command.ExecuteNonQuery();
+
+                        return Convert.ToInt16(ReturnResult.Value) == 1;
+
+
+
                     }
                 }
                 
@@ -263,59 +269,61 @@ namespace DVLD_DataAccessLayer
             catch (Exception)
             {
 
-                throw;
+                
             }
            
 
-            return isFound;
+            return false;
         }
 
         
         public static bool IsThereAnActiveScheduledTest(int LocalDrivingLicenseApplicationID,int TestTypeID )
         {
-            bool Result = false;
+            
             try
             {
 
                 using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["ConnectionString"]))
                 {
 
-                    string query = @" SELECT top 1 Found=1
-                            FROM LocalDrivingLicenseApplications INNER JOIN
-                                 TestAppointments ON LocalDrivingLicenseApplications.LocalDrivingLicenseApplicationID = TestAppointments.LocalDrivingLicenseApplicationID 
-                            WHERE
-                            (LocalDrivingLicenseApplications.LocalDrivingLicenseApplicationID = @LocalDrivingLicenseApplicationID)  
-                            AND(TestAppointments.TestTypeID = @TestTypeID) and isLocked=0
-                            ORDER BY TestAppointments.TestAppointmentID desc";
+                    //string query = @" SELECT top 1 Found=1
+                    //        FROM LocalDrivingLicenseApplications INNER JOIN
+                    //             TestAppointments ON LocalDrivingLicenseApplications.LocalDrivingLicenseApplicationID = TestAppointments.LocalDrivingLicenseApplicationID 
+                    //        WHERE
+                    //        (LocalDrivingLicenseApplications.LocalDrivingLicenseApplicationID = @LocalDrivingLicenseApplicationID)  
+                    //        AND(TestAppointments.TestTypeID = @TestTypeID) and isLocked=0
+                    //        ORDER BY TestAppointments.TestAppointmentID desc";
 
-                    using (SqlCommand command = new SqlCommand(query, connection))
+                    using (SqlCommand command = new SqlCommand("dbo.IsThereAnActiveScheduledTest", connection))
                     {
 
                         command.Parameters.AddWithValue("@LocalDrivingLicenseApplicationID", LocalDrivingLicenseApplicationID);
                         command.Parameters.AddWithValue("@TestTypeID", TestTypeID);
 
+                        SqlParameter outputResult = command.Parameters.Add("@Resut",SqlDbType.Int);
+                        {
+                            outputResult.Direction = ParameterDirection.ReturnValue;
+                        }
 
                         connection.Open();
 
-                        object result = command.ExecuteScalar();
+                        command.ExecuteNonQuery();
 
+                        return Convert.ToInt32(outputResult.Value) == 1;
 
-                        if (result != null)
-                        {
-                            Result = true;
-                        }
+                        
                     }
                 }
                 
             }
             catch (Exception ex)
             {
-                throw;
+                
             }
 
             
 
-            return Result;
+            return false;
         }
 
         public static bool IsApplicationHasSuccessTestForTestType(int LocalDrivingLicenseApplicationID, int TestTypeID)

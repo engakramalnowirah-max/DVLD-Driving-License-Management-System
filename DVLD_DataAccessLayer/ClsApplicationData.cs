@@ -22,9 +22,10 @@ namespace DVLD_DataAccessLayer
             {
                 using (SqlConnection Connection = new SqlConnection(ConfigurationManager.ConnectionStrings["MyConnection"].ConnectionString))
                 {
-                    string Query = @"select * from Applications order by ApplicationTypeID Desc;";
-                    using (SqlCommand Command = new SqlCommand(Query, Connection))
+                    //string Query = @"select * from Applications order by ApplicationTypeID Desc;";
+                    using (SqlCommand Command = new SqlCommand("SP_GetAllApplications", Connection))
                     {
+                        Command.CommandType = CommandType.StoredProcedure;
                         Connection.Open();
                         using (SqlDataReader Reader = Command.ExecuteReader())
                         {
@@ -88,7 +89,7 @@ namespace DVLD_DataAccessLayer
                         };
 
                         Connection.Open();
-                        Command.ExecuteScalar();
+                        Command.ExecuteNonQuery();
                         if (OutputParamert.Value != null) 
                         {
                             ApplicationID = Convert.ToInt32(OutputParamert.Value);
