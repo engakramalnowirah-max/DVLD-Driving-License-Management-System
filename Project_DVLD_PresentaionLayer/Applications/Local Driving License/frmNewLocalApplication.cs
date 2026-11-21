@@ -171,6 +171,7 @@ namespace Project_DVLD_PresentaionLayer.LocalDrivingApplications
                     lblID.Text = _LocalDrivingLicenseApplication.LocalDrivingLicenseApplicationID.ToString();
                     _Mode = enMode.Update;
                     MessageBox.Show("Application: Information Save Successfully", "Successfully", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                btnSave.Enabled = false;
             }
             else
             {
